@@ -124,7 +124,8 @@ showDebug = (show) => {
         var log = "";
         debug_container.innerHTML = "";
         data.devices.forEach((k,v) => {
-            log += `<tr><td>${getFriendlyName(k.entity)}</td> <td>${k.color}</td><td>${k.brightness}</td></tr>`;
+            var color_square = `<span style="display: inline-block; width:20px; height:20px; background-color:rgb(${k.color[0]}, ${k.color[1]}, ${k.color[2]})"></span>`;
+            log += `<tr><td>${getFriendlyName(k.entity)}</td> <td>${color_square} ${k.color}</td><td>${k.brightness}</td></tr>`;
         });
         debug_container.innerHTML = `Debug Data:<BR><table><tr><th style="width:200px; text-align:start;">Device</th><th style="width:100px; text-align:start;">RGB</th><th style="width:200px; text-align:start;">Brightness</th></tr>${log}</table>`;
     }
