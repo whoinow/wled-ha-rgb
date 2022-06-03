@@ -127,7 +127,7 @@ showDebug = (show) => {
             var color_square = `<span style="display: inline-block; width:20px; height:20px; background-color:rgb(${k.color[0]}, ${k.color[1]}, ${k.color[2]})"></span>`;
             log += `<tr><td>${getFriendlyName(k.entity)}</td> <td>${color_square} ${k.color}</td><td>${k.brightness}</td></tr>`;
         });
-        debug_container.innerHTML = `Debug Data:<BR><table><tr><th style="width:200px; text-align:start;">Device</th><th style="width:100px; text-align:start;">RGB</th><th style="width:200px; text-align:start;">Brightness</th></tr>${log}</table>`;
+        debug_container.innerHTML = `Debug Data:<BR><table><tr><th style="width:200px; text-align:start;">Device</th><th style="width:150px; text-align:start;">RGB</th><th style="width:200px; text-align:start;">Brightness</th></tr>${log}</table>`;
     }
     if(show) {
         websocket = new WebSocket(`ws://${window.location.hostname}:3298`);
