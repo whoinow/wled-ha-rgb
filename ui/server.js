@@ -51,7 +51,7 @@ router.post('/setconfig', (req, res) => {
 
        
     
-    if(wled_ha_rgb.running) {
+    if(wled_ha_rgb.running || (!wled_ha_rgb.running && wled_ha_rgb.started)) {
         wled_ha_rgb.restart();
     }
     else {

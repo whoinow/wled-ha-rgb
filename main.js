@@ -242,6 +242,7 @@ getNetworkInterface = () => {
 }
 
 main = () => {
+  module.exports.started = true;
   //config = require('./config.js');
   var config_string = fs.readFileSync(path.join("..", "config.json"));
   config = JSON.parse(config_string);
@@ -342,5 +343,6 @@ module.exports = {
   events: null,
   restart: restart,
   running: false,
+  started: false,
   getState: getState
 };
