@@ -31,10 +31,17 @@ var globalconnection;
 var webs_ready = false;
 var webs_id = 0;
 
-var all_ready = false;
-
 var events = require("events");
 var em = null;
+
+var States = {
+  RUNNING: 0,
+  STARTED: 1,
+  SHUTDOWN: 3,
+  NONE: 4
+}
+
+var current_state = States.NONE;
 
 Array.prototype.equals = function(array) {
   if(this.length == array.length) {
@@ -98,8 +105,7 @@ getWebsCommand = (color, light, brightness, enable, id) => {
 
 checkready = () => {
   if(udp_ready && webs_ready && webserver_ready && nwint_ready) {
-    all_ready = true;
-    module.exports.running = true;
+    module.exports.running_state = States.RUNNING;
     console.log("All services ready.");
     sendEvent("allready", config.debug);
   }
@@ -242,7 +248,7 @@ getNetworkInterface = () => {
 }
 
 main = () => {
-  module.exports.started = true;
+  module.exports.running_state = States.STARTED;
   //config = require('./config.js');
   var config_string = fs.readFileSync(path.join("..", "config.json"));
   config = JSON.parse(config_string);
@@ -277,8 +283,9 @@ main = () => {
   if(!wclient) {
     wclient = new WebSocketClient();
   }
-
-  bindWebsocketClient();
+  if(config.hass.token) {
+    bindWebsocketClient();
+  }
   wclient.connect(`ws://${config.hass.host}/api/websocket`);
 
   console.log(`Version: ${version}`);
@@ -286,22 +293,27 @@ main = () => {
 }
 
 shutdown = () => {
-  console.log("Shutting down WLED Webserver...");
-  webserver.close();
-  webserver = null;
-  console.log("Shutting down WLED UDP Server...");
-  udpserver.close();
-  udpserver = null;
-  console.log("Shutting down HASS Websocket...");
-  globalconnection.close();
+  if(webserver) {
+    console.log("Shutting down WLED Webserver...");
+    webserver.close();
+    webserver = null;
+  }
+  if(udpserver) {
+    console.log("Shutting down WLED UDP Server...");
+    udpserver.close();
+    udpserver = null;
+  }
+  if(globalconnection) {
+    console.log("Shutting down HASS Websocket...");
+    globalconnection.close();
+  }
   wclient = null;
   config = null;
   udp_ready = false;
   webs_ready = false;
   webserver_ready = false;
   nwint_ready = false;
-  all_ready = false;
-  module.exports.running = false;
+  module.exports.running_state = States.SHUTDOWN;
   sendEvent("shutdown_complete", null);
 }
 
@@ -321,7 +333,8 @@ restart = () => {
     }
     em.on("shutdown_complete", sdcb);
 
-    if(all_ready) {
+    if(module.exports.running_state == States.STARTED ||
+      module.exports.running_state == States.RUNNING) {
       shutdown();
     }
     else {
@@ -333,7 +346,7 @@ restart = () => {
   }
 }
 
-getState = () => {
+getDevices = () => {
   return { devices: config.devices };
 };
 
@@ -342,7 +355,7 @@ module.exports = {
   shutdown: shutdown,
   events: null,
   restart: restart,
-  running: false,
-  started: false,
-  getState: getState
+  running_state: States.SHUTDOWN,
+  getDevices: getDevices,
+  States: States
 };

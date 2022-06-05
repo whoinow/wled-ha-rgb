@@ -51,7 +51,8 @@ router.post('/setconfig', (req, res) => {
 
        
     
-    if(wled_ha_rgb.running || (!wled_ha_rgb.running && wled_ha_rgb.started)) {
+    if(wled_ha_rgb.running_state == wled_ha_rgb.States.RUNNING || 
+        wled_ha_rgb.running_state == wled_ha_rgb.States.STARTED) {
         wled_ha_rgb.restart();
     }
     else {
@@ -184,7 +185,7 @@ startWSServer = (start) => {
                 console.log(message);
                 
             });
-            connection.sendUTF(JSON.stringify(wled_ha_rgb.getState()));
+            connection.sendUTF(JSON.stringify(wled_ha_rgb.getDevices()));
             wled_ha_rgb.events.on("entitydata", entityDataCB);
             
             globalconnections = connection;
