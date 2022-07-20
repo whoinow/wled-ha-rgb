@@ -22,6 +22,7 @@ router.get('/client.js', (req, res) => {
 });
 
 var config = {};
+var restport = 3299;
 
 var WebSocketClient = require('websocket').client;
 var WebSocketServer = require('websocket').server;
@@ -76,7 +77,6 @@ router.post('/getentities', (req, res) => {
 
 app.use('/', router);
 
-var restport = 3299;
 app.listen(restport, () => {
     console.log(`Server running on port ${restport}`);
 });

@@ -37,6 +37,8 @@ Possible calculations:
 3. `cd ui`
 4. `node server.js` Run the server
 
+The web UI is running on http://_hostname/ip_:3299
+
 ### Linux Service Install
 Installing on your Hyperion instance (RPi etc) is a matter of copying the files in this repo, along with you config to the device running Hyperion, best is via SFTP. The target location can be anywhere
 
