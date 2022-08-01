@@ -144,19 +144,23 @@ bindWebserver = () => {
 //Hyperion "WLED" UDP Server
 bindUDPserver = () => {
   udpserver.on("message", (msg, info) => {
-    if(config.xres.state.on && webs_ready && config.devices.length <= msg.length / 3) {
-      var start = 0;
+    if(config.xres.state.on && webs_ready) {
       for(var d = 0; d < config.devices.length; d++) {
         var color = [];
-        var end = start + 3;
-        for(i = start; i < end; i++) {
+        var id = config.devices[d].id;
+        for(var i = id * 3; i < ((id * 3) + 3); i++) {
           color.push(msg[i]);
         }
+        
         if(!config.devices[d].color.equals(color)) {
           webs_id++
           config.devices[d].color = color;
           config.devices[d].brightness = getBrightness(config.devices[d].color);
-          if(config.debug) console.log(`Updating ID ${d}'s color, ID: ${webs_id}, Color: ${config.devices[d].color}, Brightness: ${config.devices[d].brightness}`);
+          if(config.devices[d].bm > 0) {
+            config.devices[d].brightness *= config.devices[d].bm;
+          }
+
+          if(config.debug) console.log(`Updating from Hyperion LED ID ${id}'s color, Entity: ${config.devices[d].entity}, WSID: ${webs_id}, Color: ${config.devices[d].color}, Brightness: ${config.devices[d].brightness}`);
           
           var webscmd = getWebsCommand(config.devices[d].color, config.devices[d].entity, config.devices[d].brightness, true, webs_id);
           globalconnection.send(webscmd);
@@ -164,7 +168,6 @@ bindUDPserver = () => {
             sendEvent("entitydata", {devices: config.devices})
           }
         }
-        start = end;
       }
     }
   });
@@ -259,13 +262,7 @@ main = () => {
     module.exports.events = em;
   }
 
-  // Ensuring the order in the array matches its ID which would match the Hyperion pixel index.
-  var tempdevs = [...config.devices];
-  config.devices = [];
-  tempdevs.forEach(device => {
-    config.devices[device.id] = device;
-  });
-  if(!webserver) {
+    if(!webserver) {
     bindWebserver();
     webserver = app.listen(config.rest_port, () => {
       console.log(`WLED JSON Server running on port ${config.rest_port}`);

@@ -13,7 +13,7 @@ document.onreadystatechange = () => {
                 var device_container = document.getElementById("device_container");
                 device_container.innerHTML = "";
             }
-            buildDevice("", true);
+            buildDevice(-1, -1, "", true);
         }
 
         var get_entities_btn = document.getElementById("get_entities");
@@ -39,16 +39,28 @@ document.onreadystatechange = () => {
             for(didx in device_inps) {
                 var device_inp = device_inps[didx];
                 if(device_inp.id && device_inp.id.indexOf("entity_inp") != -1)
-                {  
-                    var id = parseInt(device_inp.id.split(/_/g)[2]);
-
+                {
+                    var hass_id = parseInt(device_inp.id.split(/_/g)[2]);
+                    var id = -1;
+                    var lid = document.getElementById(`hyp_led_id_${hass_id}`);
+                    if(lid) {
+                        id = parseInt(lid.value);
+                    }
+                    
+                    var bmid = document.getElementById(`entity_id_bm_${hass_id}`);
+                    var bm = 1;
+                    if(bmid) {
+                        bm = parseFloat(bmid.value);
+                    }
+                    
                     var matched_entity = getEntityName(device_inp.value);
 
                     config.devices.push({
                         id: id,
-                        entity: matched_entity,//device_inp.value,
+                        entity: matched_entity,
                         color: [0,0,0],
-                        brightness: 0
+                        brightness: 0,
+                        bm: bm
                     })
                 }
 
@@ -167,7 +179,7 @@ getEntities = () => {
                         var entity = config.devices[d].entity;
                         if(entity != "") { 
                             var friendly_name = getFriendlyName(entity);
-                            buildDevice(friendly_name, true);
+                            buildDevice(config.devices[d].bm, config.devices[d].id, friendly_name, true);
                             device_found = true;
                         }
                     }
@@ -180,7 +192,7 @@ getEntities = () => {
             if(!device_found) {
                 device_container.innerHTML = "No devices configured."
                 for(var e = 0; e < entities; e++) {
-                    buildDevice("", true);
+                    buildDevice(-1, -1, "", true);
                 }
             }
         }
@@ -192,12 +204,20 @@ getEntities = () => {
     xhr.send(JSON.stringify(hassconfig));
 }
 
-buildDevice = (value = "", pulldown = false) => {
+buildDevice = (bmid = -1, ledid = -1, value = "", pulldown = false) => {
     var device_container = document.getElementById("device_container");
     var label = document.createElement("span");
     label.id = `entity_label_${device_counter}`;
-    label.innerHTML = `LED ID: ${device_counter} - HASS Light `
+    label.innerHTML = `LED ID: `;
     device_container.appendChild(label);
+
+    var led_id = document.createElement("input");
+    led_id.id = `hyp_led_id_${device_counter}`;
+    led_id.style.width = '40px';
+    led_id.setAttribute("value", ledid != -1 ? ledid : 0);
+    label.appendChild(led_id);
+
+    label.innerHTML += ` HASS Light `;
     
     if(!pulldown) {
         var new_device_inp = document.createElement("input");
@@ -220,6 +240,18 @@ buildDevice = (value = "", pulldown = false) => {
         }
         select.value = value;
     }
+
+    //device_container.innerHTML += " Brightness Modifier: ";
+
+    var brightness_modifier_label = document.createElement("span");
+    brightness_modifier_label.innerHTML += " Brightness Modifier: ";
+    device_container.appendChild(brightness_modifier_label);
+
+    var brightness_modifier = document.createElement("input");
+    brightness_modifier.style.width = "40px";
+    brightness_modifier.id = `entity_id_bm_${device_counter}`;
+    brightness_modifier.setAttribute("value", bmid != -1 ? bmid : 1);
+    device_container.appendChild(brightness_modifier);
 
     var new_device_del_btn = document.createElement("button");
     new_device_del_btn.id = `entity_del_btn_${device_counter}`;
