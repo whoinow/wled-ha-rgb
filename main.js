@@ -139,6 +139,11 @@ bindWebserver = () => {
     }
     res.send(JSON.stringify(config.xres));
   });
+  
+  router.get('/json',(req, res) => {
+    console.log("Hyperion config request received.");
+    res.send(config.xres);
+  });
 }
 
 //Hyperion "WLED" UDP Server
