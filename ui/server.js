@@ -135,7 +135,7 @@ getEntities = (res) => {
                             if(light && k.state != "unavailable" &&
                             (getSupportedColorMode(k.attributes.color_mode) || getSupportedColorMode(testcolormode)))
                             {
-                                entities.push({friendly_name:k.attributes.friendly_name, entity: k.entity_id, rgbplus: testcolormode});
+                                entities.push({friendly_name:k.attributes.friendly_name, entity: k.entity_id, colormode: testcolormode});
                             }
                         });
                         res.send(JSON.stringify(entities));
@@ -163,11 +163,8 @@ getEntities = (res) => {
 }
 
 getSupportedColorMode = (checkmode) => {
-    var supported_modes = ['rgb', 'rgbw', 'rgbww'];
+    var supported_modes = ['rgb', 'rgbw', 'rgbww', 'hs'];
     return supported_modes.indexOf(checkmode) > -1;
-    //var rgb = (k.attributes.color_mode == 'rgb' || 
-    //(k.attributes.supported_color_modes && k.attributes.supported_color_modes.indexOf("rgb") > -1));
-    //var rgbw = (k.attributes.supported_color_modes && k.attributes.supported_color_modes.indexOf("rgbw") > -1);
 };
 
 startWSServer = (start) => {

@@ -81,6 +81,35 @@ getBrightness = (color) => {
   return ret;
 }
 
+getHSFromRGB = (rgb) => {
+  if(config.debug) console.log(`RGB In: ${JSON.stringify(rgb)}`);
+  var out = { hue: 0, sat: 0};
+  var r = rgb[0];
+  var g = rgb[1];
+  var b = rgb[2];
+  var M = Math.max(r, g, b);
+  var m = Math.min(r, g, b);
+  var d = (M - m) / 255;
+  var L = ((1/2) * (M + m)) / 255
+  
+  if(L > 0) {
+    out.sat = 100 * (d / (1 - Math.abs((2 * L) - 1)));
+  }
+  if(L == 0) {
+    out.sat = 0;
+  }
+  
+  var commondeg = Math.acos((r - ((1/2) * g) - ((1/2) * b)) / Math.sqrt(Math.pow(r, 2) + Math.pow(g, 2) + Math.pow(b, 2) - (r * g) - (r * b) - (g * b))) * (180 / Math.PI);
+  if(g >= b) {
+    out.hue = commondeg
+  }
+  if(b > g) {
+    out.hue = 360 - commondeg;
+  }
+  if(config.debug) console.log(`HS out: ${JSON.stringify(out)}`);
+  return out;
+};
+
 getWebsCommand = (color, light, brightness, enable, id, type) => {
   var cmdtemplate = {
     "id": id,
@@ -88,15 +117,17 @@ getWebsCommand = (color, light, brightness, enable, id, type) => {
     "domain": "light",
     "service": enable ? "turn_on" : "turn_off",
     "service_data": {
-      //"rgb_color": color,
-      //"brightness": (color[0] + color[1] + color[2]) / 3
       "brightness": brightness
     },
     "target": {
       "entity_id": light
     }
   };
-  if(type != "rgb") {
+  if(type == 'hs') {
+    var hs = getHSFromRGB(color)
+    color = [hs.hue, hs.sat];
+  }
+  else if(type != "rgb") {
     color.push(0);
     color.push(0);
   }
@@ -173,9 +204,9 @@ bindUDPserver = () => {
             device.brightness *= device.bm;
           }
 
-          if(config.debug) console.log(`Updating from Hyperion LED ID ${id}'s color, Entity: ${device.entity}, WSID: ${webs_id}, Color: ${device.color}, Brightness: ${device.brightness}`);
+          if(config.debug) console.log(`Updating from Hyperion LED ID ${id}'s color, Entity: ${device.entity}, WSID: ${webs_id}, Color: ${device.color}, Brightness: ${device.brightness}, Colormode: ${device.colormode}`);
           
-          var webscmd = getWebsCommand(device.color, device.entity, device.brightness, true, webs_id, device.rgbplus);
+          var webscmd = getWebsCommand(device.color, device.entity, device.brightness, true, webs_id, device.colormode);
           globalconnection.send(webscmd);
           if(config.debug) {
             sendEvent("entitydata", {devices: config.devices})

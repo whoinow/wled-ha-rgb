@@ -55,7 +55,7 @@ document.onreadystatechange = () => {
                     
                     var matched_entity = getEntityName(device_inp.value);
 
-                    var matched_rgbw = getEntityRGBW(device_inp.value);
+                    var matched_colormode = getEntityColormode(device_inp.value);
 
                     config.devices.push({
                         id: id,
@@ -63,7 +63,7 @@ document.onreadystatechange = () => {
                         color: [0,0,0],
                         brightness: 0,
                         bm: bm,
-                        rgbplus: matched_rgbw
+                        colormode: matched_colormode
                     })
                 }
 
@@ -127,10 +127,10 @@ getEntityName = (friendly_name) => {
     }
 }
 
-getEntityRGBW = (friendly_name) => {
+getEntityColormode = (friendly_name) => {
     for(var i = 0; i < entities.length; i++) {
         if(entities[i].friendly_name == friendly_name) {
-            return entities[i].rgbplus;
+            return entities[i].colormode;
         }
     }
 }
