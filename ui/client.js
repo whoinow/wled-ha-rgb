@@ -13,7 +13,7 @@ document.onreadystatechange = () => {
                 var device_container = document.getElementById("device_container");
                 device_container.innerHTML = "";
             }
-            buildDevice(-1, -1, "", true);
+            buildDevice(-1, device_counter, "", true);
         }
 
         var get_entities_btn = document.getElementById("get_entities");
@@ -244,12 +244,13 @@ buildDevice = (bmid = -1, ledid = -1, value = "", pulldown = false) => {
     //device_container.innerHTML += " Brightness Modifier: ";
 
     var brightness_modifier_label = document.createElement("span");
+    brightness_modifier_label.id =  `entity_id_bm_label_${device_counter}`;
     brightness_modifier_label.innerHTML += " Brightness Modifier: ";
     device_container.appendChild(brightness_modifier_label);
 
     var brightness_modifier = document.createElement("input");
     brightness_modifier.style.width = "40px";
-    brightness_modifier.id = `entity_id_bm_${device_counter}`;
+    brightness_modifier.id = `entity_id_bm_inp_${device_counter}`;
     brightness_modifier.setAttribute("value", bmid != -1 ? bmid : 1);
     device_container.appendChild(brightness_modifier);
 
@@ -263,6 +264,10 @@ buildDevice = (bmid = -1, ledid = -1, value = "", pulldown = false) => {
         ddevice_container.removeChild(dlabel);
         var dinput = document.getElementById(new_device_inp.id);
         ddevice_container.removeChild(dinput);
+        var dbmlabel = document.getElementById(brightness_modifier_label.id);
+        ddevice_container.removeChild(dbmlabel);
+        var dbminput = document.getElementById(brightness_modifier.id);
+        ddevice_container.removeChild(dbminput);
         var del_btn = document.getElementById(new_device_del_btn.id);
         ddevice_container.removeChild(del_btn);
         var brs = ddevice_container.getElementsByTagName("br");
