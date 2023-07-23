@@ -82,6 +82,7 @@ getBrightness = (color) => {
 }
 
 getHSFromRGB = (rgb) => {
+  //Source: https://www.had2know.org/technology/hsl-rgb-color-converter.html
   if(config.debug) console.log(`RGB In: ${JSON.stringify(rgb)}`);
   var out = { hue: 0, sat: 0};
   var r = rgb[0];
