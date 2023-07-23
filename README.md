@@ -29,7 +29,7 @@ Possible calculations:
 * `avg` - just average of all LED levels
   
 `debug` turns on debug logging, viewable via `journalctl` on linux, or just in the CLI where you ran the server.js.
-`WLED HTTP Port` this is the port configured in Hyperion. Note: WLED negotiation and config protocol defaults to 80. This server defaults to 8989 so either change it to 80 in the config or make sure in the Hyperion LED Hardware config that the _Target IP/Hostname_ includes the port like this: _hostname_:8989 (or whatever port you choose). Again, not required in Hyperion if you configure this server for port 80.
+`WLED HTTP Port` this is the port configured in Hyperion. Note: WLED negotiation and config protocol defaults to 80. This server defaults to 8989 so either change it to 80 in the config or make sure in the Hyperion LED Hardware config that the _Target IP/Hostname_ includes the port like this: _hostname_:8989 (or whatever port you choose). Again, not required in Hyperion if you configure this server for port 80. NOTE: Hyperion 2.x.x dosn't allow you to set a port like this, so it must be set to default 80 in wled-ha-rgb.
 
 ## Install
 1. Install NodeJS
@@ -52,4 +52,8 @@ A linux systemctl service file is included in the repo as well. For running it a
 4. And then this to make sure it starts with the system: `sudo systemctl enable wled-has-rgb`
 
 ## Hyperion Setup
-Setup is like a normal WLED LED Instance. Configure the LEDs for the space you want to sample from. Then just make note of the LED IDs for the config of this server. Also a major note is to make sure when you enter the `Target IP/Hostname`, it includes the port. EX: `192.168.1.11:8989`
+Setup is like a normal WLED LED Instance. Configure the LEDs for the space you want to sample from. Then just make note of the LED IDs for the config of this server. Also a major note is to make sure when you enter the `Target IP/Hostname`, it includes the port. EX: `192.168.1.11:8989`.
+
+### Hyperion 2.x.x Notes:
+* Hyperion 2.x.x doesn't allow you to set a port in the Hostname box, so it must be set to default 80 in wled-ha-rgb.
+* Hyperion must be in export mode. When adding the WLED instance, make sure the Streaming protocol is set to RAW. (DDP is not yet supported in this project)
