@@ -125,12 +125,17 @@ getEntities = (res) => {
                         console.log("Server: HASS Websocket Entities Retrieved, populating and sending list...");
                         var entities = [];
                         message.result.forEach(function(k, v) {
-                            if(k.entity_id && k.entity_id.indexOf("light") > -1 && 
-                            k.state != "unavailable" &&
-                            (k.attributes.color_mode == 'rgb' || 
-                            (k.attributes.supported_color_modes && k.attributes.supported_color_modes.indexOf("rgb") > -1)))
+                            var light = k.entity_id && k.entity_id.startsWith("light");
+                            
+                            if(light)
                             {
-                                entities.push({friendly_name:k.attributes.friendly_name, entity: k.entity_id});
+                                console.log(`light: ${JSON.stringify(k)}`);
+                            }
+                            var testcolormode = k.attributes.supported_color_modes ? k.attributes.supported_color_modes[0] : "none";
+                            if(light && k.state != "unavailable" &&
+                            (getSupportedColorMode(k.attributes.color_mode) || getSupportedColorMode(testcolormode)))
+                            {
+                                entities.push({friendly_name:k.attributes.friendly_name, entity: k.entity_id, rgbplus: testcolormode});
                             }
                         });
                         res.send(JSON.stringify(entities));
@@ -156,6 +161,14 @@ getEntities = (res) => {
         res.send(JSON.stringify([]));
     }
 }
+
+getSupportedColorMode = (checkmode) => {
+    var supported_modes = ['rgb', 'rgbw', 'rgbww'];
+    return supported_modes.indexOf(checkmode) > -1;
+    //var rgb = (k.attributes.color_mode == 'rgb' || 
+    //(k.attributes.supported_color_modes && k.attributes.supported_color_modes.indexOf("rgb") > -1));
+    //var rgbw = (k.attributes.supported_color_modes && k.attributes.supported_color_modes.indexOf("rgbw") > -1);
+};
 
 startWSServer = (start) => {
     entityDataCB = (data) => {

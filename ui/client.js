@@ -55,12 +55,15 @@ document.onreadystatechange = () => {
                     
                     var matched_entity = getEntityName(device_inp.value);
 
+                    var matched_rgbw = getEntityRGBW(device_inp.value);
+
                     config.devices.push({
                         id: id,
                         entity: matched_entity,
                         color: [0,0,0],
                         brightness: 0,
-                        bm: bm
+                        bm: bm,
+                        rgbplus: matched_rgbw
                     })
                 }
 
@@ -120,6 +123,14 @@ getEntityName = (friendly_name) => {
     for(var i = 0; i < entities.length; i++) {
         if(entities[i].friendly_name == friendly_name) {
             return entities[i].entity;
+        }
+    }
+}
+
+getEntityRGBW = (friendly_name) => {
+    for(var i = 0; i < entities.length; i++) {
+        if(entities[i].friendly_name == friendly_name) {
+            return entities[i].rgbplus;
         }
     }
 }
