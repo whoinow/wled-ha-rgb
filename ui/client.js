@@ -99,6 +99,7 @@ getConfig = () => {
             document.getElementById("bcalcs").value = config.brightness_calc;
             document.getElementById("wled_http_port").value =  config.rest_port;
             document.getElementById("debug").checked = config.debug;    
+            document.getElementById("hass_host").value = config.hass.host;
             document.getElementById("hass_token").value = config.hass.token;
 
             getEntities();
