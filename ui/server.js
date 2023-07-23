@@ -47,6 +47,9 @@ router.post('/setconfig', (req, res) => {
     config.brightness_calc =  req.body.brightness_calc;
     config.debug =  req.body.debug;
     config.rest_port =  req.body.rest_port;
+    config.xres.info.leds.count = config.devices.length;
+    config.xres.state.seg[0].stop = config.devices.length;
+    config.xres.state.seg[0].len = config.devices.length;
     var set_config_string = JSON.stringify(config);
     fs.writeFileSync(config_path, set_config_string);
 

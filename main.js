@@ -141,8 +141,8 @@ bindWebserver = () => {
   });
   
   router.get('/json',(req, res) => {
-    console.log("Hyperion config request received.");
-    res.send(config.xres);
+    console.log(`Hyperion config request received. ${JSON.stringify(config.xres.info)}`);
+    res.send(JSON.stringify(config.xres));
   });
 }
 
@@ -227,7 +227,7 @@ bindWebsocketClient = () => {
 
 getNetworkInterface = () => {
   setNetworkInfo = (interface) => {
-    config.xres.info.mac = interface.mac_address.replace(/:/g,'');
+    config.xres.info.mac = interface.mac_address.replace(/:/g,'').toLowerCase();
     config.xres.info.ip = interface.ip_address;
     console.log(`Using interface ${interface.name}, ${interface.ip_address}`);
     nwint_ready = true;
@@ -260,7 +260,7 @@ main = () => {
   //config = require('./config.js');
   var config_string = fs.readFileSync(path.join("..", "config.json"));
   config = JSON.parse(config_string);
-  config.xres.info.count = config.devices.length;
+  config.xres.info.leds.count = config.devices.length;
   getNetworkInterface();
   if(!em) {
     em = new events.EventEmitter();
