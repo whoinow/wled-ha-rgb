@@ -17,7 +17,7 @@
     },
     "brightness_calc": "bt709",
     "debug": false,
-    "rest_port": 8989,
+    "rest_port": 80,
     "brightness_calcs": {
         "bt709": {
             "maj": null,
